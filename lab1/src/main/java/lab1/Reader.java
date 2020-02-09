@@ -18,6 +18,7 @@ class Reader {
         } catch (IOException ex) {
             Logger.getLogger(Reader.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
         return Converter.convert(str);
     }
 }
