@@ -22,7 +22,7 @@ public class Main {
         }
         String inFileName = null;
         if (args.length > 2) {
-            LOG.log(Level.SEVERE,"Too much arguments for programme {0}. End of work.", Arrays.toString(args));
+            LOG.log(Level.SEVERE,"Too much arguments for program {0}. End of work.", Arrays.toString(args));
             return;
         } else if (args.length == 2) {
             inFileName = args[1];
