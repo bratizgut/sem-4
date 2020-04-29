@@ -25,7 +25,7 @@ public class Collider {
                     ball.setDx(-ball.getDx());
                     ball.setDy(player.getDy());
                 }
-            } else {
+            } else if (ball.getX() <= 0){
                 ball.respawn();
                 ball.setMove(false);
                 return -1;
@@ -38,7 +38,7 @@ public class Collider {
                     ball.setDx(-ball.getDx());
                     ball.setDy(enemy.getDy());
                 }
-            } else {
+            } else if ((ball.getX() + ball.getRad()) >= WIDTH) {
                 ball.respawn();
                 ball.setMove(false);
                 return 1;
