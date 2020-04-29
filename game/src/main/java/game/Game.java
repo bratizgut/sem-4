@@ -1,3 +1,5 @@
+package game;
+
 /**
  *
  * @author bratizgut
@@ -11,15 +13,18 @@ import java.io.IOException;
 import java.util.Properties;
 
 public class Game {
-    public static void main(String[] args) {
+    
+    private Model model;
+    private Controller controller;
+    private MainFrame view;
+
+    public Game() {
         
         Properties properties = new Properties();
-        FileInputStream fileInputStream;
         
         try{
-            
-            fileInputStream = new FileInputStream("gameprops.properties");
-            properties.load(fileInputStream);
+
+            properties.load(this.getClass().getResourceAsStream("/gameprops.properties"));
             
             int width = Integer.parseInt(properties.getProperty("fieldWidth"));
             int height = Integer.parseInt(properties.getProperty("fieldHeight"));
@@ -35,14 +40,18 @@ public class Game {
             int paneWidth = Integer.parseInt(properties.getProperty("paneWidth"));
             String paneImg = properties.getProperty("paneImg");
             
-            Model model = new Model(width, height, ballSpeed, ballRad, playerSpeed, enemySpeed, paneLength, paneWidth);
-            Controller controller = new Controller(model);
-            MainFrame mainFrame = new MainFrame(width, height, ballImg, paneImg, controller);
+            model = new Model(width, height, ballSpeed, ballRad, playerSpeed, enemySpeed, paneLength, paneWidth);
+            controller = new Controller(model);
+            view = new MainFrame(width, height, ballImg, ballRad, paneImg, paneLength, paneWidth, controller);
             
-            model.addObserver(mainFrame.getGameFrame());
-            model.start();
+            model.addObserver(view.getGameFrame());
+            
         } catch (IOException | NumberFormatException ex) {
             
         }
+    }
+    
+    public void startGame() {
+        model.start();
     }
 }

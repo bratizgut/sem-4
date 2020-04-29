@@ -1,6 +1,5 @@
 package model;
 
-import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -9,57 +8,103 @@ import java.util.logging.Logger;
  *
  * @author bratizgut
  */
-
-
-
 public class Model implements Observable {
-    
+
     private final Ball ball;
     private final Player player;
     private final Enemy enemy;
-    
+
     private int Score1;
     private int Score2;
-    
+
     private final int width;
     private final int height;
-    
+
     private ArrayList<Observer> listeners;
-    
+
     private boolean gameEnd = false;
-    
+
     public Model(int width, int height, int ballSpeed, int ballRad, int playerSpeed, int enemySpeed, int paneLength, int paneWidth) {
-        
+
         this.width = width;
         this.height = height;
-        
+
         ball = new Ball(width, height, ballSpeed, ballRad);
         player = new Player(width, height, playerSpeed, paneLength, paneWidth);
         enemy = new Enemy(width, height, enemySpeed, paneLength, paneWidth);
-        
+
         ball.addObserver(enemy);
-        
+
+        this.modelInit();
+
+        Collider.setWIDTH(width);
+        Collider.setPaneWidth(paneWidth);
+
+    }
+    
+    private void modelInit() {
         Score1 = 0;
         Score2 = 0;
-        
-        Collider.setWIDTH(width);
-        
+        ball.respawn();
+        player.respawn();
+        enemy.respawn();
+    }
+    
+    private class GameThread extends Thread {
+
+        public GameThread() {
+        }
+
+        @Override
+        public void run() {
+            while (true) {
+                ball.refresh();
+                enemy.refresh();
+                player.refresh();
+                int res = 0;
+                if ((ball.getX() < 100) || (ball.getX() > (width - 100))) {
+                    res = Collider.collisionCheck(player, enemy, ball);
+                }
+                if (res == 1) {
+                    Score1 += 1;
+                }
+                if (res == -1) {
+                    Score2 += 1;
+                }
+
+                if (Score1 == 10 || Score2 == 10) {
+                    gameEnd = true;
+                }
+
+                update();
+
+                if (Score1 == 10 || Score2 == 10) {
+                    break;
+                }
+
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+
     }
 
     @Override
     public void addObserver(Observer observer) {
-        
-        if(listeners == null)
+
+        if (listeners == null) {
             listeners = new ArrayList<>();
+        }
         listeners.add(observer);
-        
+
     }
 
     @Override
     public void deleteObserver(Observer observer) {
-        
         listeners.remove(observer);
-        
     }
 
     public int getBallX() {
@@ -77,12 +122,12 @@ public class Model implements Observable {
     public int getPlayerY() {
         return player.getY();
     }
-    
-    public int getEnemyX(){
+
+    public int getEnemyX() {
         return enemy.getX();
     }
-    
-    public int getEnemyY(){
+
+    public int getEnemyY() {
         return enemy.getY();
     }
 
@@ -100,7 +145,6 @@ public class Model implements Observable {
 
     @Override
     public void update() {
-        
         if (listeners != null) {
             for (Observer i : listeners) {
                 if (i != null) {
@@ -108,46 +152,29 @@ public class Model implements Observable {
                 }
             }
         }
-        
-    }   
-    
-    public void movePlayer(int pressed, int released){
+    }
+
+    public void movePlayer(int pressed, int released) {
         player.setMove(pressed, released);
     }
-    
-    public void start(){
-        this.gameProcces();
-    }
-    
-    private void gameProcces(){
-        while (true) {            
-            ball.refresh();
-            enemy.refresh();
-            player.refresh();
-            int res = 0;
-            if((ball.getX() < 100) || (ball.getX() > (width - 100)))
-                res = Collider.collisionCheck(player, enemy, ball);
-            if(res == 1)
-                Score1 += 1;
-            if(res == -1)
-                Score2 += 1;
-            
-            if(Score1 == 10 || Score2 == 10){
-                gameEnd = true;
-            }
 
-            update();
-            
-            if(Score1 == 10 || Score2 == 10){
-                break;
-            }
-            
+    public synchronized void start() { 
+        while(true) {
+            GameThread gameThread = new GameThread();
+            this.modelInit();
+            this.gameEnd = false;
+            gameThread.start();
             try {
-                Thread.sleep(10);
+                wait();
             } catch (InterruptedException ex) {
                 Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
     
+    public synchronized void tryContinue(){
+        System.out.println("model.Model.tryContinue()");
+        notify();
+    }
+
 }

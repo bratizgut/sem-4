@@ -1,7 +1,5 @@
 package model;
 
-import java.awt.event.KeyEvent;
-
 /**
  *
  * @author bratizgut
@@ -33,11 +31,19 @@ public class Player {
         this.paneWidth = paneWidth;
 
         x = 0;
+        
         y = (HEIGHT - paneLength) / 2;
 
         UP = false;
         DOWN = false;
 
+    }
+    
+    public  void respawn() {
+        y = (HEIGHT - paneLength) / 2;
+
+        UP = false;
+        DOWN = false;
     }
 
     public int getX() {

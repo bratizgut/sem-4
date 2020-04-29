@@ -26,6 +26,9 @@ public class Controller {
             if (key == KeyEvent.VK_S) {
                 model.movePlayer(Direction.DOWN, Direction.NONE);
             }
+            if(key == KeyEvent.VK_SPACE){
+                model.tryContinue();
+            }
         }
         if (released != null) {
             int key = released.getKeyCode();

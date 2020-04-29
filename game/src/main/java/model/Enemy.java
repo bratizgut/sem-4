@@ -1,7 +1,5 @@
 package model;
 
-import java.awt.event.KeyEvent;
-
 /**
  *
  * @author bratizgut
@@ -32,6 +30,11 @@ public class Enemy implements Observer {
         
         x = WIDTH - paneWidth;
         y = (HEIGHT - paneLength) / 2;                
+    }
+    
+    public void respawn() {
+        dy = 0;
+        y = (HEIGHT - paneLength) / 2;
     }
 
     public int getX() {

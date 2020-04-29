@@ -1,41 +1,41 @@
 package model;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 /**
  *
  * @author bratizgut
  */
-public class Ball implements Observable{
-    
+public class Ball implements Observable {
+
     private int x;
     private int y;
     private int dx;
     private int dy;
-    
+
     private final int rad;
     private final int speed;
-    
+
     private final int WIDTH;
     private final int HEIGHT;
-    
+
+    private boolean move = true;
+    private int count = 0;
+
     private ArrayList<Observer> listeners;
-    
-    private final Random gen = new Random(System.currentTimeMillis());
 
     public Ball(int width, int height, int speed, int rad) {
         WIDTH = width;
         HEIGHT = height;
-        
+
         this.speed = speed;
         this.rad = rad;
-        
+
         dx = this.speed;
         dy = this.speed;
         x = width / 2;
         y = height / 2;
-        
+
         listeners = new ArrayList<>();
     }
 
@@ -58,23 +58,27 @@ public class Ball implements Observable{
     public int getDx() {
         return dx;
     }
-    
+
     public void setDx(int dx) {
-        this.dx = Integer.signum(dx)*speed;
+        this.dx = Integer.signum(dx) * speed;
     }
 
     public int getDy() {
         return dy;
     }
 
+    public void setMove(boolean move) {
+        this.move = move;
+    }
+
     public void setDy(int paneDy) {
-        if(paneDy!= 0){
+        if (paneDy != 0) {
             if (Integer.signum(paneDy) == Integer.signum(dy)) {
                 dy += Integer.signum(dy);
             } else {
                 dy -= Integer.signum(dy);
             }
-            if(dy == 0){
+            if (dy == 0) {
                 dy = Integer.signum(paneDy);
             }
         }
@@ -83,55 +87,63 @@ public class Ball implements Observable{
     public int getRad() {
         return rad;
     }
-    
-    public void respawn(){
+
+    public void respawn() {
         x = WIDTH / 2;
         y = HEIGHT / 2;
-        dx = - Integer.signum(dx) * speed;
-        dy = - Integer.signum(dy) * speed;
-        if(dy == 0){
+        dx = -Integer.signum(dx) * speed;
+        dy = -Integer.signum(dy) * speed;
+        if (dy == 0) {
             dy = speed;
         }
     }
-    
-    public void refresh(){
-        if(dx > 0){
-            if((x + rad) < WIDTH){
-                x += dx;
+
+    public void refresh() {
+        if (move) {
+            if (dx > 0) {
+                if ((x + rad) < WIDTH) {
+                    x += dx;
+                } else {
+                    x = WIDTH - rad;
+                    dx = -dx;
+                }
             } else {
-                x = WIDTH - rad;
-                dx = -dx;
+                if (x > 0) {
+                    x += dx;
+                } else {
+                    x = 0;
+                    dx = -dx;
+                }
+            }
+            if (dy > 0) {
+                if ((y + rad) < HEIGHT) {
+                    y += dy;
+                } else {
+                    y = HEIGHT - rad;
+                    dy = -dy;
+                }
+            } else {
+                if (y > 0) {
+                    y += dy;
+                } else {
+                    y = 0;
+                    dy = -dy;
+                }
             }
         } else {
-            if(x > 0){
-                x += dx;
-            } else {
-                x = 0;
-                dx = -dx;
-            }
-        }
-        if(dy > 0){
-            if((y + rad) < HEIGHT){
-                y += dy;
-            } else {
-                y = HEIGHT - rad;
-                dy = -dy;
-            }
-        } else {
-            if(y > 0){
-                y += dy;
-            } else {
-                y = 0;
-                dy = -dy;
+            count++;
+            if(count == 30){
+                this.setMove(true);
+                count = 0;
             }
         }
         update();
     }
 
     @Override
-    public void addObserver(Observer observer) { 
+    public void addObserver(Observer observer) {
         listeners = new ArrayList<>();
-        listeners.add(observer); 
+        listeners.add(observer);
     }
 
     @Override
@@ -141,9 +153,9 @@ public class Ball implements Observable{
 
     @Override
     public void update() {
-        for(Observer i : listeners){
+        for (Observer i : listeners) {
             i.handleEvent(this);
         }
     }
-    
+
 }
