@@ -173,8 +173,9 @@ public class Model implements Observable {
     }
     
     public synchronized void tryContinue(){
-        System.out.println("model.Model.tryContinue()");
-        notify();
+        if(gameEnd){
+            notify();
+        }
     }
 
 }

@@ -8,7 +8,6 @@ package game;
 import view.MainFrame;
 import model.Model;
 import controller.Controller;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 

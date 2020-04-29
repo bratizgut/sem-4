@@ -92,7 +92,7 @@ public class MainFrame extends JFrame {
         scoreLabel.setHorizontalAlignment(JLabel.CENTER);
         scoreLabel.setVerticalAlignment(JLabel.TOP);
         
-        gameOverLabel = new JLabel("<html>Game over!<br>Press space to restart</html>");
+        gameOverLabel = new JLabel("<html>Game over!<br>Press space to restart<br>Press ESC to exit.</html>");
         gameOverLabel.setFont(font);
         gameOverLabel.setPreferredSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
         gameOverLabel.setHorizontalAlignment(JLabel.CENTER);
