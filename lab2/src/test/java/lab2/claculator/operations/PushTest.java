@@ -8,6 +8,8 @@ package lab2.claculator.operations;
 import lab2.calculator.operations.Push;
 import lab2.calculator.operations.Define;
 import lab2.calculator.Context;
+import lab2.exeptions.ArgumentsException;
+import lab2.exeptions.ContextException;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -22,15 +24,30 @@ public class PushTest {
         Context context = new Context();
         String[] args = new String[]{};
         Push instance = new Push();
-        instance.doOperation(context, args);
+        try {
+            instance.doOperation(context, args);
+        } catch (ArgumentsException | ContextException ex) {
+        }
         assertTrue(context.getNums().isEmpty());
-        instance.doOperation(context, new String[]{"5", "10"});
+        
+        try {
+            instance.doOperation(context, new String[]{"5", "10"});
+        } catch (ArgumentsException | ContextException ex) {
+        }
         assertTrue(context.getNums().isEmpty());
-        instance.doOperation(context, new String[]{"5"});
+        
+        try {
+            instance.doOperation(context, new String[]{"5"});
+        } catch (ArgumentsException | ContextException ex) {
+        }
         assertTrue(context.getNums().peek().equals(5d));
+        
         Define define = new Define();
+        try {
         define.doOperation(context, new String[]{"a", "10"});
         instance.doOperation(context, new String[]{"a"});
+        } catch (ArgumentsException | ContextException ex) { 
+        }      
         assertTrue(context.getNums().peek().equals(10d));
     }
 

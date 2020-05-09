@@ -11,6 +11,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -115,9 +118,9 @@ public class MainFrame extends JFrame {
         
         Timer timer = new Timer(1, this);
         
-        private final Image ballImg = new ImageIcon(this.getClass().getResource("/" + ballImgName)).getImage();
-        private final Image paneImg = new ImageIcon(this.getClass().getResource("/" + paneImgName)).getImage();
-        
+        private Image ballImg;
+        private Image paneImg;
+
         private int ballX;
         private int ballY;
         
@@ -133,6 +136,13 @@ public class MainFrame extends JFrame {
         private boolean gameEnd = false;
 
         public GameFrame() {
+            try {
+                ballImg = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/" + ballImgName))).getImage();
+                paneImg = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/" + paneImgName))).getImage();
+            } catch (NullPointerException ex) {
+                Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+                System.exit(2);
+            }
             timer.start();
         }
         

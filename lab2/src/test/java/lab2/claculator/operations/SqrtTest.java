@@ -7,8 +7,11 @@ package lab2.claculator.operations;
 
 import lab2.calculator.operations.Sqrt;
 import lab2.calculator.Context;
+import lab2.exeptions.ArgumentsException;
+import lab2.exeptions.ContextException;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.function.Executable;
 
 /**
  *
@@ -21,15 +24,31 @@ public class SqrtTest {
         Context context = new Context();
         Sqrt instance = new Sqrt();
         String[] args = new String[]{};
-        instance.doOperation(context, args);
+        try {
+            instance.doOperation(context, args);
+        } catch (ArgumentsException | ContextException ex) {
+        }
         assertTrue(context.getNums().isEmpty());
+        
         context.getNums().push(4d);
         assertTrue(context.getNums().peek().equals(4d));
-        instance.doOperation(context, args);
+        try {
+            instance.doOperation(context, args);
+        } catch (ArgumentsException | ContextException ex) {
+        }
         assertTrue(context.getNums().peek().equals(2d));
-        context.getNums().push(-10d);
-        instance.doOperation(context, args);
-        assertTrue(context.getNums().peek().equals(-10d));
+        
+        assertThrows(ArithmeticException.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
+                Context context = new Context();
+                Sqrt instance = new Sqrt();
+                String[] args = new String[]{};
+                context.getNums().push(-10d);
+                instance.doOperation(context, args);
+            }
+        });
+        
     }
     
 }

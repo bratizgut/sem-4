@@ -7,6 +7,8 @@ package lab2.claculator.operations;
 
 import lab2.calculator.operations.Pop;
 import lab2.calculator.Context;
+import lab2.exeptions.ArgumentsException;
+import lab2.exeptions.ContextException;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,15 +23,26 @@ public class PopTest {
         Context context = new Context();
         Pop instance = new Pop();
         String[] args = new String[]{};
-        instance.doOperation(context, args);
+        try {
+            instance.doOperation(context, args);
+        } catch (ArgumentsException | ContextException ex) {
+        }
         assertTrue(context.getNums().isEmpty());
+        
         context.getNums().push(4d);
         assertTrue(context.getNums().peek().equals(4d));
-        instance.doOperation(context, args);
+        try {
+            instance.doOperation(context, args);
+        } catch (ArgumentsException | ContextException ex) {
+        }
         assertTrue(context.getNums().isEmpty());
+        
         context.getNums().push(-10d);
         context.getNums().push(15d);
-        instance.doOperation(context, args);
+        try {
+            instance.doOperation(context, args);
+        } catch (ArgumentsException | ContextException ex) {
+        }
         assertTrue(context.getNums().peek().equals(-10d));
         assertFalse(context.getNums().isEmpty());
     }

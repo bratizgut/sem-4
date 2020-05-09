@@ -9,7 +9,10 @@ import view.MainFrame;
 import model.Model;
 import controller.Controller;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Game {
     
@@ -23,7 +26,7 @@ public class Game {
         
         try{
 
-            properties.load(this.getClass().getResourceAsStream("/gameprops.properties"));
+            properties.load(Objects.requireNonNull(this.getClass().getResourceAsStream("/gameprops.properties")));
             
             int width = Integer.parseInt(properties.getProperty("fieldWidth"));
             int height = Integer.parseInt(properties.getProperty("fieldHeight"));
@@ -45,8 +48,9 @@ public class Game {
             
             model.addObserver(view.getGameFrame());
             
-        } catch (IOException | NumberFormatException ex) {
-            
+        } catch (IOException | NumberFormatException | NullPointerException ex) {
+            Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+            System.exit(1);
         }
     }
     

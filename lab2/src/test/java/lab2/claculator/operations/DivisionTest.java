@@ -7,6 +7,8 @@ package lab2.claculator.operations;
 
 import lab2.calculator.operations.Division;
 import lab2.calculator.Context;
+import lab2.exeptions.ArgumentsException;
+import lab2.exeptions.ContextException;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,17 +23,32 @@ public class DivisionTest {
         Context context = new Context();
         Division instance = new Division();
         String[] args = new String[]{};
-        instance.doOperation(context, args);
+        try {
+            instance.doOperation(context, args);
+        } catch (ArgumentsException | ContextException | ArithmeticException ex) {
+        }
         assertTrue(context.getNums().isEmpty());
+        
         context.getNums().push(5d);
-        instance.doOperation(context, args);
+        try {
+            instance.doOperation(context, args);
+        } catch (ArgumentsException | ContextException | ArithmeticException ex) {
+        }
         assertTrue(context.getNums().peek().equals(5d));
+        
         context.getNums().push(6d);
         assertTrue(context.getNums().peek().equals(6d));
-        instance.doOperation(context, args);
+        try {
+            instance.doOperation(context, args);
+        } catch (ArgumentsException | ContextException | ArithmeticException ex) {
+        }
         assertTrue(context.getNums().peek().equals(6 / 5d));
+        
         context.getNums().push(0d);
-        instance.doOperation(context, args);
+        try {
+            instance.doOperation(context, args);
+        } catch (ArgumentsException | ContextException | ArithmeticException ex) {
+        }
         assertTrue(context.getNums().peek().equals(0d));
     }
     

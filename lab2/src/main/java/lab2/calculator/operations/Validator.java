@@ -1,8 +1,7 @@
 package lab2.calculator.operations;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import lab2.calculator.Context;
+import lab2.exeptions.*;
 
 /**
  *
@@ -10,17 +9,15 @@ import lab2.calculator.Context;
  */
 public class Validator {
     
-    private static final Logger LOG = Logger.getLogger(Validator.class.getName());
-    
-    public boolean validate(Context context, String[] args){
-        if (args.length > 0) {
-            LOG.log(Level.WARNING, "Don't need arguments for this operation");
-            return false;
+    public void validate(Context context, int reqContext, String[] args, int reqArgs) throws ArgumentsException, ContextException {
+        if (args.length < reqArgs){
+            throw new ArgumentsException("Too few arguments");
         }
-        if(context.getNums().size() < 2){
-            LOG.log(Level.SEVERE, "Too few elements on stack");
-            return false;
+        if (args.length > reqArgs) {
+            throw new ArgumentsException("Too many arguments");
         }
-        return true;
+        if (context.getNums().size() < reqContext){
+            throw new ContextException("Too few elements on stack");
+        }
     }
 }
