@@ -4,12 +4,12 @@ package lab2.calculator;
  *
  * @author bratizgut
  */
-import java.lang.reflect.InvocationTargetException;
 import java.util.Scanner;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import lab2.calculator.operations.Operations;
 import lab2.exeptions.ArgumentsException;
+import lab2.exeptions.CommandNotFoundException;
 import lab2.exeptions.ContextException;
 import lab2.exeptions.PropertiesNotFoundException;
 
@@ -38,8 +38,8 @@ public class Calculator {
                         } catch (ArgumentsException | ContextException | ArithmeticException ex) {
                             LOG.log(Level.WARNING, ex.getMessage());
                         }
-                    } catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | InvocationTargetException ex) {
-                        LOG.log(Level.WARNING, "Could not create {0}", operationName);
+                    } catch (CommandNotFoundException ex) {
+                        LOG.log(Level.WARNING, ex.getMessage());
                     }
                 }
             } else {
