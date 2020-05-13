@@ -27,7 +27,9 @@ public class Controller {
                 model.movePlayer(Direction.DOWN, Direction.NONE);
             }
             if(key == KeyEvent.VK_SPACE){
-                model.tryContinue();
+                if(model.isGameEnd()){
+                    model.start();
+                }
             }
         }
         if (released != null) {

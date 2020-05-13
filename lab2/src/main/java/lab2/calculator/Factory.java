@@ -5,8 +5,8 @@ package lab2.calculator;
  * @author bratizgut
  */
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Objects;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,19 +22,22 @@ public class Factory {
 
     private static volatile Factory instance;
     
-    private Factory() throws IOException, NullPointerException {
-        properties.load(Objects.requireNonNull(Factory.class.getResourceAsStream("/config.properties")));
+    private Factory() throws PropertiesNotFoundException {
+        InputStream propStream = Factory.class.getResourceAsStream("/config.properties");
+        if(propStream == null)
+            throw new PropertiesNotFoundException("Properties could not be found.");
+        try {
+            properties.load(propStream);
+        } catch (IOException ex) {
+            throw new PropertiesNotFoundException("Properties could not be loaded.");
+        }
     }
     
     public static Factory getInstance() throws PropertiesNotFoundException {
         if(instance == null) {
             synchronized (Factory.class) {
-                if(instance == null) {
-                    try {
+                if(instance == null) { 
                     instance = new Factory();
-                    } catch (IOException | NullPointerException ex) {
-                        throw new PropertiesNotFoundException();
-                    }
                 }
             }
         }
@@ -42,16 +45,16 @@ public class Factory {
     }
 
     public Operations createOperation(String operationName) throws CommandNotFoundException {
-        String className = properties.getProperty(operationName);
         LOG.log(Level.FINE, "Trying to create class for command {0}", operationName);
+        String className = properties.getProperty(operationName);
+        if(className == null){
+            throw new CommandNotFoundException("Command " + operationName + " not found.");
+        }
         Operations operation;
         try {
             operation = (Operations) Class.forName(className).getDeclaredConstructor().newInstance();
-        } catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException | NullPointerException ex) {
-            throw new CommandNotFoundException("Command " + operationName + " not found.");
-        }
-        if (operation != null) {
-            LOG.log(Level.FINE, "Created operation {0}", className);
+        } catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
+            throw new CommandNotFoundException("Command " + operationName + " could not be created.");
         }
         return operation;
     }

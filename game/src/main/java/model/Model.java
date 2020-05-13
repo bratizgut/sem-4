@@ -41,7 +41,7 @@ public class Model implements Observable {
         Collider.setPaneWidth(paneWidth);
 
     }
-    
+
     private void modelInit() {
         Score1 = 0;
         Score2 = 0;
@@ -49,7 +49,7 @@ public class Model implements Observable {
         player.respawn();
         enemy.respawn();
     }
-    
+
     private class GameThread extends Thread {
 
         public GameThread() {
@@ -158,24 +158,10 @@ public class Model implements Observable {
         player.setMove(pressed, released);
     }
 
-    public synchronized void start() { 
-        while(true) {
-            GameThread gameThread = new GameThread();
-            this.modelInit();
-            this.gameEnd = false;
-            gameThread.start();
-            try {
-                wait();
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
+    public synchronized void start() {
+        GameThread gameThread = new GameThread();
+        this.modelInit();
+        this.gameEnd = false;
+        gameThread.start();
     }
-    
-    public synchronized void tryContinue(){
-        if(gameEnd){
-            notify();
-        }
-    }
-
 }

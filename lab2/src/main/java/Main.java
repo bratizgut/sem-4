@@ -3,9 +3,9 @@
  * @author bratizgut
  */
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -20,8 +20,12 @@ public class Main {
         
         LogManager logManager = LogManager.getLogManager();
         try {
-            logManager.readConfiguration(Objects.requireNonNull(Main.class.getClassLoader().getResourceAsStream("log.properties")));
-        } catch (IOException | NullPointerException ex){
+            InputStream logStream = Main.class.getClassLoader().getResourceAsStream("log.properties");
+            if(logStream == null){
+                LOG.log(Level.WARNING, "Can not read properties for logging");
+            }
+            logManager.readConfiguration(logStream);
+        } catch (IOException ex){
             LOG.log(Level.WARNING, "Can not read properties for logging");
         }
         
@@ -48,7 +52,7 @@ public class Main {
         try {
             calculator.calculate(reader);
         } catch (PropertiesNotFoundException ex) {
-            LOG.log(Level.SEVERE, "Could not open properties");
+            LOG.log(Level.SEVERE, ex.getMessage());
         }
         
         LOG.log(Level.INFO, "Successfully ended calculation!");
