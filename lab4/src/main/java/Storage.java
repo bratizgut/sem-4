@@ -28,10 +28,6 @@ public class Storage<T extends Detail> {
             if (details.size() < capacity) {
                 details.add(detail);
                 notify();
-                if(controller != null){
-                    controller.notifyController();
-                }
-                
                 return;
             }
             wait();
