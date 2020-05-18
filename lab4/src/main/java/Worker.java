@@ -12,8 +12,7 @@ public class Worker implements Runnable {
     private final Storage<Accessory> accessoryStorage;
     private final Storage<Car> carStorage;
 
-    public Worker(Storage<Body> bodyStorage, Storage<Engine> engineStorage, Storage<Accessory> accessoryStorage,
-            Storage<Car> carStorage) {
+    public Worker(Storage<Body> bodyStorage, Storage<Engine> engineStorage, Storage<Accessory> accessoryStorage, Storage<Car> carStorage) {
         this.bodyStorage = bodyStorage;
         this.engineStorage = engineStorage;
         this.accessoryStorage = accessoryStorage;

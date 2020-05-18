@@ -1,5 +1,7 @@
 
 import details.*;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Level;
@@ -9,7 +11,7 @@ import java.util.logging.Logger;
  *
  * @author bratizgut
  */
-public class Controller {
+public class Controller implements Observer {
 
     private static final Logger LOG = Logger.getLogger(Controller.class.getName());
 
@@ -33,8 +35,10 @@ public class Controller {
         workers.shutdownNow();
     }
 
-    public synchronized void notifyController() {
-        LOG.log(Level.INFO, "Made: {0} Queue: {1}", new Object[]{workers.getCompletedTaskCount(), workers.getQueue().size()});
+    @Override
+    public void update(Observable o, Object arg) {
+        if(arg != null)
+            LOG.log(Level.INFO, "Made: {0} Queue: {1}", new Object[]{workers.getCompletedTaskCount(), workers.getQueue().size()});
         while ((carStorage.getDetailsNum() + workers.getQueue().size()) < 0.4 * carStorage.getCapacity()) {
             workers.execute(new Worker(bodyStorage, engineStorage, accessoryStorage, carStorage));
         }
