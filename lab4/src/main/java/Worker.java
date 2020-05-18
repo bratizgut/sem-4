@@ -11,21 +11,22 @@ public class Worker implements Runnable {
     private final Storage<Engine> engineStorage;
     private final Storage<Accessory> accessoryStorage;
     private final Storage<Car> carStorage;
-    
-    public Worker(Storage<Body> bodyStorage, Storage<Engine> engineStorage, Storage<Accessory> accessoryStorage, Storage<Car> carStorage) {
+
+    public Worker(Storage<Body> bodyStorage, Storage<Engine> engineStorage, Storage<Accessory> accessoryStorage,
+            Storage<Car> carStorage) {
         this.bodyStorage = bodyStorage;
         this.engineStorage = engineStorage;
         this.accessoryStorage = accessoryStorage;
         this.carStorage = carStorage;
     }
-    
+
     @Override
     public void run() {
         Body body;
         Engine engine;
         Accessory accessory1;
         Accessory accessory2;
-        
+
         try {
             body = (Body) bodyStorage.get();
             engine = (Engine) engineStorage.get();
@@ -39,11 +40,7 @@ public class Worker implements Runnable {
             carStorage.add(car);
         } catch (InterruptedException e) {
             return;
-<<<<<<< HEAD
-        }      
-=======
-        }        
->>>>>>> acfca30dd4260171fe52fa85a731d57b8c120a85
+        }
     }
-    
+
 }
