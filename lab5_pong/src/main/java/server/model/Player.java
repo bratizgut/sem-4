@@ -1,4 +1,4 @@
-package model;
+package server.model;
 
 /**
  *
@@ -21,7 +21,7 @@ public class Player {
     private final int WIDTH;
     private final int HEIGHT;
 
-    public Player(int width, int height, int speed, int paneLength, int paneWidth) {
+    public Player(int width, int height, int speed, int paneLength, int paneWidth, int side) {
         this.WIDTH = width;
         this.HEIGHT = height;
 
@@ -30,7 +30,11 @@ public class Player {
         this.paneLength = paneLength;
         this.paneWidth = paneWidth;
 
-        x = 0;
+        if(side == 1) {
+            x = 0;
+        } else {
+            x = width - paneWidth;
+        }
         
         y = (HEIGHT - paneLength) / 2;
 

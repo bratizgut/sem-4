@@ -1,8 +1,7 @@
-package model;
+package server.model;
 
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import server.message.ModelState;
 
 /**
  *
@@ -11,8 +10,8 @@ import java.util.logging.Logger;
 public class Model implements Observable {
 
     private final Ball ball;
-    private final Player player;
-    private final Enemy enemy;
+    private final Player player1;
+    private final Player player2;
 
     private int Score1;
     private int Score2;
@@ -20,9 +19,15 @@ public class Model implements Observable {
     private final int width;
     private final int height;
 
-    private ArrayList<Observer> listeners;
-
     private boolean gameEnd = false;
+    private boolean connectionFlag = true;
+
+    private boolean p1Ready = true;
+    private boolean p2Ready = true;
+
+    private GameThread gameThread;
+
+    private final ArrayList<Observer> listeners;
 
     public Model(int width, int height, int ballSpeed, int ballRad, int playerSpeed, int enemySpeed, int paneLength, int paneWidth) {
 
@@ -30,12 +35,12 @@ public class Model implements Observable {
         this.height = height;
 
         ball = new Ball(width, height, ballSpeed, ballRad);
-        player = new Player(width, height, playerSpeed, paneLength, paneWidth);
-        enemy = new Enemy(width, height, enemySpeed, paneLength, paneWidth);
-
-        ball.addObserver(enemy);
+        player1 = new Player(width, height, playerSpeed, paneLength, paneWidth, 1);
+        player2 = new Player(width, height, playerSpeed, paneLength, paneWidth, 2);
 
         this.modelInit();
+
+        listeners = new ArrayList<>();
 
         Collider.setWIDTH(width);
         Collider.setPaneWidth(paneWidth);
@@ -46,24 +51,42 @@ public class Model implements Observable {
         Score1 = 0;
         Score2 = 0;
         ball.respawn();
-        player.respawn();
-        enemy.respawn();
+        player1.respawn();
+        player2.respawn();
+    }
+
+    @Override
+    public void addObserver(Observer observer) {
+        listeners.add(observer);
+    }
+
+    @Override
+    public void deleteObserver(Observer observer) {
+        listeners.remove(observer);
+    }
+
+    @Override
+    public void update() {
+        if (listeners != null) {
+            for (Observer i : listeners) {
+                if (i != null) {
+                    i.handleEvent(this);
+                }
+            }
+        }
     }
 
     private class GameThread extends Thread {
 
-        public GameThread() {
-        }
-
         @Override
         public void run() {
-            while (true) {
+            while (!isInterrupted()) {
                 ball.refresh();
-                enemy.refresh();
-                player.refresh();
+                player2.refresh();
+                player1.refresh();
                 int res = 0;
                 if ((ball.getX() < 100) || (ball.getX() > (width - 100))) {
-                    res = Collider.collisionCheck(player, enemy, ball);
+                    res = Collider.collisionCheck(player1, player2, ball);
                 }
                 if (res == 1) {
                     Score1 += 1;
@@ -83,85 +106,55 @@ public class Model implements Observable {
                 }
 
                 try {
-                    Thread.sleep(10);
+                    Thread.sleep(20);
                 } catch (InterruptedException ex) {
-                    Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
+                    break;
                 }
             }
         }
 
-    }
-
-    @Override
-    public void addObserver(Observer observer) {
-
-        if (listeners == null) {
-            listeners = new ArrayList<>();
-        }
-        listeners.add(observer);
-
-    }
-
-    @Override
-    public void deleteObserver(Observer observer) {
-        listeners.remove(observer);
-    }
-
-    public int getBallX() {
-        return ball.getX();
-    }
-
-    public int getBallY() {
-        return ball.getY();
-    }
-
-    public int getPlayerX() {
-        return player.getX();
-    }
-
-    public int getPlayerY() {
-        return player.getY();
-    }
-
-    public int getEnemyX() {
-        return enemy.getX();
-    }
-
-    public int getEnemyY() {
-        return enemy.getY();
-    }
-
-    public int getScore1() {
-        return Score1;
-    }
-
-    public int getScore2() {
-        return Score2;
     }
 
     public boolean isGameEnd() {
         return gameEnd;
     }
+    
+    public ModelState getModelState(){
+        return new ModelState(player1.getX(), player1.getY(), player2.getX(), player2.getY(), ball.getX(), ball.getY(), Score1, Score2, gameEnd, connectionFlag, p1Ready, p2Ready);
+    }
 
-    @Override
-    public void update() {
-        if (listeners != null) {
-            for (Observer i : listeners) {
-                if (i != null) {
-                    i.handleEvent(this);
-                }
-            }
+    public void setPlayerReady(int num) {
+        if (num == 1) {
+            p1Ready = true;
+        } else {
+            p2Ready = true;
         }
     }
 
-    public void movePlayer(int pressed, int released) {
-        player.setMove(pressed, released);
+    public void movePlayer(int pressed, int released, int playerNum) {
+        if (playerNum == 1) {
+            player1.setMove(pressed, released);
+        }
+        if (playerNum == 2) {
+            player2.setMove(pressed, released);
+        }
     }
 
     public synchronized void start() {
-        GameThread gameThread = new GameThread();
-        this.modelInit();
-        this.gameEnd = false;
-        gameThread.start();
+        if (p1Ready && p2Ready) {
+            p1Ready = false;
+            p2Ready = false;
+            gameThread = new GameThread();
+            this.modelInit();
+            this.gameEnd = false;
+            gameThread.start();
+        }
     }
+
+    public void end() {
+        connectionFlag = false;
+        update();
+        gameThread.interrupt();
+    }
+    
 }

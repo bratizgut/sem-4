@@ -5,6 +5,7 @@ import java.util.ArrayList;
 /**
  *
  * @author bratizgut
+ * @param <T>
  */
 public class Storage<T extends Detail> {
 
@@ -28,10 +29,6 @@ public class Storage<T extends Detail> {
             if (details.size() < capacity) {
                 details.add(detail);
                 notify();
-                if(controller != null){
-                    controller.notifyController();
-                }
-                
                 return;
             }
             wait();

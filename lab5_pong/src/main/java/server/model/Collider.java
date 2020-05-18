@@ -1,4 +1,4 @@
-package model;
+package server.model;
 
 /**
  *
@@ -17,7 +17,7 @@ public class Collider {
         Collider.paneWidth = paneWidth;
     }
     
-    static int collisionCheck(Player player, Enemy enemy, Ball ball){
+    static int collisionCheck(Player player, Player enemy, Ball ball){
         
         if(ball.getX() <= paneWidth){
             if(((player.getY() - ball.getRad()) < ball.getY()) && ((player.getY() + player.getPaneLength()) > ball.getY())){

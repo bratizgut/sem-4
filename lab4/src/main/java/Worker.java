@@ -39,8 +39,7 @@ public class Worker implements Runnable {
             carStorage.add(car);
         } catch (InterruptedException e) {
             return;
-        }
-//        
+        }      
     }
     
 }
