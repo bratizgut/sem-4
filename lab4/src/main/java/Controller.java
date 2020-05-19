@@ -38,7 +38,7 @@ public class Controller implements Observer {
     }
 
     public void stop() {
-        workers.shutdownNow();
+        workers.shutdownNow();  
     }
 
     @Override
