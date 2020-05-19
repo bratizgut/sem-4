@@ -86,7 +86,7 @@ public class Controller extends Thread implements Observer {
     public void handleEvent(Observable o) {
         if(connected) {
             try {
-                out.writeObject(model.getModelState());
+                out.writeObject(model.getModelState().getMessage());
             } catch (IOException ex) {
                 connected = false;
                 model.end();

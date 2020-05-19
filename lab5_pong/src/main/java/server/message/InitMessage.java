@@ -6,7 +6,7 @@ import java.io.Serializable;
  *
  * @author bratizgut
  */
-public class InitMessage implements Serializable {
+public class InitMessage implements Serializable, Message {
     public final int width;
     public final int height;
     public final int ballRad;

@@ -1,7 +1,8 @@
 package server.model;
 
 import java.util.ArrayList;
-import server.message.ModelState;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -56,12 +57,12 @@ public class Model implements Observable {
     }
 
     @Override
-    public void addObserver(Observer observer) {
+    public synchronized void addObserver(Observer observer) {
         listeners.add(observer);
     }
 
     @Override
-    public void deleteObserver(Observer observer) {
+    public synchronized void deleteObserver(Observer observer) {
         listeners.remove(observer);
     }
 
@@ -140,7 +141,7 @@ public class Model implements Observable {
         }
     }
 
-    public synchronized void start() {
+    public void start() {
         if (p1Ready && p2Ready) {
             p1Ready = false;
             p2Ready = false;
@@ -155,6 +156,11 @@ public class Model implements Observable {
         connectionFlag = false;
         update();
         gameThread.interrupt();
+        try {
+            gameThread.join();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
 }

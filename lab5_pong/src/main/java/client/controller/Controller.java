@@ -11,7 +11,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import server.message.ModelState;
+import server.message.CoordMessage;
+import server.message.GameEndMessage;
+import server.message.Message;
 
 public class Controller extends Thread implements Observable {
 
@@ -49,19 +51,30 @@ public class Controller extends Thread implements Observable {
         while (!isInterrupted()) {
             try {
                 try {
-                    ModelState message = (ModelState) reader.readObject();
-                    player1X = message.player1X;
-                    player1Y = message.player1Y;
-                    player2X = message.player2X;
-                    player2Y = message.player2Y;
-                    ballX = message.ballX;
-                    ballY = message.ballY;
-                    Score1 = message.Score1;
-                    Score2 = message.Score2;
-                    gameEnd = message.gameEnd;
-                    connectionFlag = message.connectionFlag;
-                    p1Ready = message.P1Ready;
-                    p2Ready = message.P2Ready;
+                    Message message = (Message) reader.readObject();
+                    if(message.getClass().equals(CoordMessage.class)) {
+                        CoordMessage coordMessage = (CoordMessage) message;
+                        player1X = coordMessage.player1X;
+                        player1Y = coordMessage.player1Y;
+                        player2X = coordMessage.player2X;
+                        player2Y = coordMessage.player2Y;
+                        ballX = coordMessage.ballX;
+                        ballY = coordMessage.ballY;
+                        Score1 = coordMessage.Score1;
+                        Score2 = coordMessage.Score2;
+                        gameEnd = false;
+                        connectionFlag = true;
+                        p1Ready = false;
+                        p2Ready = false;
+                    } else if (message.getClass().equals(GameEndMessage.class)) {
+                        GameEndMessage gameEndMessage = (GameEndMessage) message;
+                        gameEnd = true;
+                        p1Ready = gameEndMessage.P1Ready;
+                        p2Ready = gameEndMessage.P2Ready;
+                    } else {
+                        connectionFlag = false;
+                    }
+                    
                     if (!connectionFlag) {
                         interrupt();
                     }

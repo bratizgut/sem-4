@@ -1,12 +1,15 @@
-package server.message;
+package server.model;
 
-import java.io.Serializable;
+import server.message.ConnectionProblemsError;
+import server.message.CoordMessage;
+import server.message.GameEndMessage;
+import server.message.Message;
 
 /**
  *
  * @author bratizgut
  */
-public class ModelState implements Serializable {
+public class ModelState {
     public final int player1X;
     public final int player1Y;
     public final int player2X;
@@ -34,6 +37,16 @@ public class ModelState implements Serializable {
         this.connectionFlag = connectionFlag;
         this.P1Ready = P1Ready;
         this.P2Ready = P2Ready;
+    }
+    
+    public Message getMessage() {
+        if(!connectionFlag) {
+            return new ConnectionProblemsError();
+        }
+        if(gameEnd) {
+            return new GameEndMessage(P1Ready, P2Ready);
+        }
+        return new CoordMessage(player1X, player1Y, player2X, player2Y, ballX, ballY, Score1, Score2);
     }
     
 }

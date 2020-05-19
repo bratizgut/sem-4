@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -18,12 +19,20 @@ import server.model.Model;
  *
  * @author bratizgut
  */
-public class Server {
+public class Server extends Thread {
+
+    private final Map<String, Socket> socketMap;
+    private ServerSocket serverSocket;
+    private final int port;
+
+    ArrayList<modelCreationThread> games;
 
     private class modelCreationThread extends Thread {
 
         private final Socket socket1;
         private final Socket socket2;
+
+        private Model model;
 
         public modelCreationThread(Socket socket1, Socket socket2) {
             this.socket1 = socket1;
@@ -59,7 +68,7 @@ public class Server {
                 socketOutputStream1.writeObject(new InitMessage(width, height, ballRad, paneLength, paneWidth, true));
                 socketOutputStream2.writeObject(new InitMessage(width, height, ballRad, paneLength, paneWidth, true));
 
-                Model model = new Model(width, height, ballSpeed, ballRad, playerSpeed, ballSpeed, paneLength,
+                model = new Model(width, height, ballSpeed, ballRad, playerSpeed, ballSpeed, paneLength,
                         paneWidth);
                 Controller controller1 = new Controller(socketReader1, socketOutputStream1, 1, model);
                 controller1.start();
@@ -87,22 +96,38 @@ public class Server {
                 }
             }
         }
+
+        public void closeGame() {
+            model.end();
+            try {
+                socket1.close();
+                socket2.close();
+            } catch (IOException ex) {
+                return;
+            }
+        }
     }
 
-    public void start(int port) {
-        Map<String, Socket> socketMap = new HashMap<>();
+    public Server(int port) {
+        socketMap = new HashMap<>();
+        this.port = port;
+        games = new ArrayList<>();
+    }
 
-        ServerSocket serverSocket;
+    @Override
+    public void run() {
         try {
             serverSocket = new ServerSocket(port);
-            while (true) {
+            while (!isInterrupted()) {
                 try {
                     Socket fromClientSocket = serverSocket.accept();
                     InputStream stream = fromClientSocket.getInputStream();
                     BufferedReader socketReader = new BufferedReader(new InputStreamReader(stream));
                     String gameId = socketReader.readLine();
                     if (socketMap.containsKey(gameId)) {
-                        new modelCreationThread(socketMap.get(gameId), fromClientSocket).start();
+                        modelCreationThread creationThread = new modelCreationThread(socketMap.get(gameId), fromClientSocket);
+                        games.add(creationThread);
+                        creationThread.start();
                         socketMap.remove(gameId);
                     } else {
                         socketMap.put(gameId, fromClientSocket);
@@ -113,6 +138,26 @@ public class Server {
             }
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void closeServer() {
+        try {
+            serverSocket.close();
+        } catch (IOException ex) {
+            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        for (modelCreationThread i : games) {
+            i.closeGame();
+        }
+        interrupt();
+        try {
+            this.join();
+            for (modelCreationThread i : games) {
+                i.join();
+            }
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }
