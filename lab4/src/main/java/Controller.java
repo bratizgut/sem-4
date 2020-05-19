@@ -30,6 +30,12 @@ public class Controller implements Observer {
         this.carStorage = carStorage;
         workers = (ThreadPoolExecutor) Executors.newFixedThreadPool(workersNum);
     }
+    
+    public void start() {
+        while ((carStorage.getDetailsNum() + workers.getQueue().size()) < 0.4 * carStorage.getCapacity()) {
+            workers.execute(new Worker(bodyStorage, engineStorage, accessoryStorage, carStorage));
+        }
+    }
 
     public void stop() {
         workers.shutdownNow();

@@ -39,9 +39,6 @@ public class Factory {
         carStorage = new Storage<>(cCapacity);
         controller = new Controller(engineStorage, bodyStorage, accessoryStorage, carStorage, wNum);
 
-        engineStorage.addObserver(controller);
-        bodyStorage.addObserver(controller);
-        accessoryStorage.addObserver(controller);
         carStorage.addObserver(controller);
 
         dealers = new ArrayList<>();
@@ -59,6 +56,8 @@ public class Factory {
         for (Dealer i : dealers) {
             i.start();
         }
+        
+        controller.start();
     }
 
     public void factoryStop() {
