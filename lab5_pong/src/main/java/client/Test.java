@@ -1,7 +1,6 @@
 package client;
 
-import client.controller.Controller;
-import client.view.MainFrame;
+import common.view.MainFrame;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -11,7 +10,7 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import server.message.InitMessage;
+import common.message.InitMessage;
 
 /**
  *
@@ -29,36 +28,12 @@ public class Test {
             pw.println("123");
             
             InputStream stream = servSocket.getInputStream();
-            ObjectInputStream inputStream = new ObjectInputStream(stream);
-            
-            Properties properties = new Properties();
-
-            properties.load(Objects.requireNonNull(Test.class.getResourceAsStream("/gameprops.properties")));
-            
-            int width = Integer.parseInt(properties.getProperty("fieldWidth"));
-            pw.println(width);
-            int height = Integer.parseInt(properties.getProperty("fieldHeight"));
-            pw.println(height);
-            
-            int ballSpeed = Integer.parseInt(properties.getProperty("ballSpeed"));
-            pw.println(ballSpeed);
-            int ballRad = Integer.parseInt(properties.getProperty("ballRad"));
-            pw.println(ballRad);
-            String ballImg = properties.getProperty("ballImg");
-            
-            int playerSpeed = Integer.parseInt(properties.getProperty("playerSpeed"));
-            pw.println(playerSpeed);
-            
-            int paneLength = Integer.parseInt(properties.getProperty("paneLength"));
-            pw.println(paneLength);
-            int paneWidth = Integer.parseInt(properties.getProperty("paneWidth"));
-            pw.println(paneWidth);
-            String paneImg = properties.getProperty("paneImg");
+            ObjectInputStream inputStream = new ObjectInputStream(stream);           
             
             try {
                 InitMessage message = (InitMessage)inputStream.readObject();
                 Controller controller = new Controller(pw, inputStream);
-                MainFrame view = new MainFrame(message, ballImg, paneImg, controller);
+                MainFrame view = new MainFrame(message, controller);
                 controller.addObserver(view.getGameFrame());
                 controller.start();
             } catch (ClassNotFoundException ex) {

@@ -1,4 +1,4 @@
-package server.model;
+package common.model;
 
 import java.util.ArrayList;
 import java.util.logging.Level;

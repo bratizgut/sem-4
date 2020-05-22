@@ -1,9 +1,9 @@
-package server.model;
+package common.model;
 
-import server.message.ConnectionProblemsError;
-import server.message.CoordMessage;
-import server.message.GameEndMessage;
-import server.message.Message;
+import common.message.ConnectionProblemsError;
+import common.message.CoordMessage;
+import common.message.GameEndMessage;
+import common.message.Message;
 
 /**
  *

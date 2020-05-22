@@ -1,5 +1,6 @@
 package server;
 
+import client.Test;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,10 +11,12 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import server.message.InitMessage;
-import server.model.Model;
+import common.message.InitMessage;
+import common.model.Model;
 
 /**
  *
@@ -50,23 +53,25 @@ public class Server extends Thread {
                 BufferedReader socketReader2 = new BufferedReader(new InputStreamReader(stream));
                 ObjectOutputStream socketOutputStream2 = new ObjectOutputStream(socket2.getOutputStream());
 
-                int width = Integer.min(Integer.parseInt(socketReader1.readLine()),
-                        Integer.parseInt(socketReader2.readLine()));
-                int height = Integer.min(Integer.parseInt(socketReader1.readLine()),
-                        Integer.parseInt(socketReader2.readLine()));
-                int ballSpeed = Integer.min(Integer.parseInt(socketReader1.readLine()),
-                        Integer.parseInt(socketReader2.readLine()));
-                int ballRad = Integer.min(Integer.parseInt(socketReader1.readLine()),
-                        Integer.parseInt(socketReader2.readLine()));
-                int playerSpeed = Integer.min(Integer.parseInt(socketReader1.readLine()),
-                        Integer.parseInt(socketReader2.readLine()));
-                int paneLength = Integer.min(Integer.parseInt(socketReader1.readLine()),
-                        Integer.parseInt(socketReader2.readLine()));
-                int paneWidth = Integer.min(Integer.parseInt(socketReader1.readLine()),
-                        Integer.parseInt(socketReader2.readLine()));
+                Properties properties = new Properties();
 
-                socketOutputStream1.writeObject(new InitMessage(width, height, ballRad, paneLength, paneWidth, true));
-                socketOutputStream2.writeObject(new InitMessage(width, height, ballRad, paneLength, paneWidth, true));
+                properties.load(Objects.requireNonNull(Test.class.getResourceAsStream("/gameprops.properties")));
+
+                int width = Integer.parseInt(properties.getProperty("fieldWidth"));
+                int height = Integer.parseInt(properties.getProperty("fieldHeight"));
+
+                int ballSpeed = Integer.parseInt(properties.getProperty("ballSpeed"));
+                int ballRad = Integer.parseInt(properties.getProperty("ballRad"));
+                String ballImg = properties.getProperty("ballImg");
+
+                int playerSpeed = Integer.parseInt(properties.getProperty("playerSpeed"));
+
+                int paneLength = Integer.parseInt(properties.getProperty("paneLength"));
+                int paneWidth = Integer.parseInt(properties.getProperty("paneWidth"));
+                String paneImg = properties.getProperty("paneImg");
+                
+                socketOutputStream1.writeObject(new InitMessage(width, height, ballRad, paneLength, paneWidth, true, ballImg, paneImg));
+                socketOutputStream2.writeObject(new InitMessage(width, height, ballRad, paneLength, paneWidth, true, ballImg, paneImg));
 
                 model = new Model(width, height, ballSpeed, ballRad, playerSpeed, ballSpeed, paneLength,
                         paneWidth);
@@ -81,7 +86,7 @@ public class Server extends Thread {
                 if (socket1.isConnected()) {
                     try {
                         ObjectOutputStream socketOutputStream = new ObjectOutputStream(socket1.getOutputStream());
-                        socketOutputStream.writeObject(new InitMessage(0, 0, 0, 0, 0, true));
+                        socketOutputStream.writeObject(new InitMessage(0, 0, 0, 0, 0, true, null, null));
                     } catch (IOException ex1) {
                         Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex1);
                     }
@@ -89,7 +94,7 @@ public class Server extends Thread {
                 if (socket2.isConnected()) {
                     try {
                         ObjectOutputStream socketOutputStream = new ObjectOutputStream(socket2.getOutputStream());
-                        socketOutputStream.writeObject(new InitMessage(0, 0, 0, 0, 0, true));
+                        socketOutputStream.writeObject(new InitMessage(0, 0, 0, 0, 0, true, null, null));
                     } catch (IOException ex1) {
                         Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex1);
                     }

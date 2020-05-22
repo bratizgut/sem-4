@@ -1,4 +1,4 @@
-package server.message;
+package common.message;
 
 import java.io.Serializable;
 
@@ -14,14 +14,19 @@ public class InitMessage implements Serializable, Message {
     public final int paneWidth;
     
     public final boolean connectionFlag;
+    
+    public final String ballImg;
+    public final String paneImg;
 
-    public InitMessage(int width, int height, int ballRad, int paneLength, int paneWidth, boolean connectionFlag) {
+    public InitMessage(int width, int height, int ballRad, int paneLength, int paneWidth, boolean connectionFlag, String ballImg, String paneImg) {
         this.width = width;
         this.height = height;
         this.ballRad = ballRad;
         this.paneLength = paneLength;
         this.paneWidth = paneWidth;
         this.connectionFlag = connectionFlag;
+        this.ballImg = ballImg;
+        this.paneImg = paneImg;
     }
 
 }

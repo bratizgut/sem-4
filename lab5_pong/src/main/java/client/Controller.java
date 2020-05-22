@@ -1,23 +1,23 @@
-package client.controller;
+package client;
 
 /**
  *
  * @author bratizgut
  */
-import client.Observable;
-import client.Observer;
+import common.Observable;
+import common.Observer;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import server.message.CoordMessage;
-import server.message.GameEndMessage;
-import server.message.Message;
+import common.message.CoordMessage;
+import common.message.GameEndMessage;
+import common.message.Message;
 
 public class Controller extends Thread implements Observable {
 
-    private ArrayList<Observer> listeners;
+    private final ArrayList<Observer> listeners;
 
     private final PrintWriter pw;
     private final ObjectInputStream reader;

@@ -1,8 +1,8 @@
-package client.view;
+package common.view;
 
-import client.Observable;
-import client.Observer;
-import client.controller.Controller;
+import common.Observable;
+import common.Observer;
+import client.Controller;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -21,7 +21,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.Timer;
-import server.message.InitMessage;
+import common.message.InitMessage;
 
 /**
  *
@@ -51,15 +51,15 @@ public class MainFrame extends JFrame {
     private final int paneLength;
     private final int paneWidth;
 
-    public MainFrame(InitMessage message, String ballImg, String paneImg, Controller control) {
+    public MainFrame(InitMessage message, Controller control) {
 
         WINDOW_WIDTH = message.width + 2 * BORDER_SIZE;
         WINDOW_HEIGHT = message.height + 2 * BORDER_SIZE;
 
-        ballImgName = ballImg;
+        ballImgName = message.ballImg;
         this.ballRad = message.ballRad;
 
-        paneImgName = paneImg;
+        paneImgName = message.paneImg;
         this.paneLength = message.paneLength;
         this.paneWidth = message.paneWidth;
 
@@ -67,8 +67,6 @@ public class MainFrame extends JFrame {
 
         super.setTitle("Game");
         super.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        super.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-        super.setUndecorated(true);
         super.setResizable(false);
 
         super.addKeyListener(new KeyAdapter() {
@@ -129,6 +127,10 @@ public class MainFrame extends JFrame {
         gameFrame.add(connectionStoppedLabel);
         gameFrame.add(p1ReadyLabel);
         gameFrame.add(p2ReadyLabel);
+        
+        gameFrame.setPreferredSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
+        super.getContentPane().add(gameFrame);
+        super.pack();
 
         super.add(gameFrame);
         

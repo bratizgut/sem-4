@@ -3,10 +3,10 @@ package server;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import server.model.Model;
-import server.model.Direction;
-import server.model.Observable;
-import server.model.Observer;
+import common.model.Model;
+import common.model.Direction;
+import common.model.Observable;
+import common.model.Observer;
 
 /**
  *
